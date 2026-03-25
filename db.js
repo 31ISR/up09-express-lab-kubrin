@@ -23,7 +23,9 @@ db.prepare(`
             genre TEXT NOT NULL,
             description TEXT NOT NULL,
             createdBy INTEGER NOT NULL,
-            FOREIGN KEY (createdBy) REFERENCES user(createdBy)
+            createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (createdBy) REFERENCES user(id)
+
         )
     `).run()
 
