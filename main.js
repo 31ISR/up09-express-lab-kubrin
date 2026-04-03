@@ -91,6 +91,44 @@ app.get("/api/books", (req, res) => {
         console.error(error)
         res.status(500).json({ error: "Something went wrong" })
     }
-});
+})
+
+app.get("/api/books/:id", (req, res) => {
+    try {
+
+        const books = db.prepare("SELECT * FROM book WHERE id=?").run(req.params.id);
+        return res.status(200).json({ success: true, books, error: null })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+})
+
+app.post("/api/books", auth, (req, res) =>{
+    try {
+        const userId = req.user.id
+        const {tittle, author, year, genre, description}=req.body
+        const query = db.prepare(`INSERT INTO book (tittle, author, year, genre, description, createdBy) VALUES (?, ?, ?, ?, ?, ?)`).run(tittle, author, year, genre, description, userId) 
+        res.status(201).json({success:"true"})
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+})
+//UPDATE имя_таблицы SET столбец = значение WHERE условие
+app.put("/api/books/:id", auth, (req, res)=>{
+    try {
+        console.log(req.body);
+        
+        const {tittle, author, year, genre, description}=req.body
+        const query = db.prepare(`UPDATE book SET tittle = ?, author = ?, year = ?, genre = ?, description = ? WHERE id = ?`).run(tittle,author,year,genre,description,req.params.id)
+        res.status(201).json(query)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+})
+
+;
 
 app.listen(3000)
